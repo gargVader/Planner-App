@@ -27,7 +27,6 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appHeading"
-        android:layout_marginBottom="@dimen/_8sdp"
         />
 
     <ImageView

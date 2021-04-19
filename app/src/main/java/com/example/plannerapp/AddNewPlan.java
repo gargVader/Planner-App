@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -32,6 +34,7 @@ public class AddNewPlan extends BottomSheetDialogFragment {
     public static final String TAG = "AddNewPlan";
     private EditText planEditText;
     private LinearLayout savePlanButton;
+    private TextView bottomSheetHeading;
     private FirebaseFirestore firestore;
     private Context context;
 
@@ -57,8 +60,19 @@ public class AddNewPlan extends BottomSheetDialogFragment {
 
         planEditText = view.findViewById(R.id.planEditText);
         savePlanButton = view.findViewById(R.id.savePlanLayout);
+        bottomSheetHeading = view.findViewById(R.id.bottomSheetHeading);
 
         firestore = FirebaseFirestore.getInstance();
+
+        boolean updateMode = false;
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            updateMode = true;
+            String planText = bundle.getString("planText");
+            bottomSheetHeading.setText("View Plan");
+            planEditText.setText(planText);
+        }
 
         planEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -82,37 +96,44 @@ public class AddNewPlan extends BottomSheetDialogFragment {
             }
         });
 
+        boolean finalUpdateMode = updateMode;
         savePlanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String planText = planEditText.getText().toString().trim();
 
-                if (planText.isEmpty()) {
-                    Toast.makeText(context, "Plan cannot be empty", Toast.LENGTH_SHORT).show();
+
+                if (finalUpdateMode) {
+//                    firestore.collection("plan").document()
+                    // TODO: UPDATE METHOD
+
                 } else {
+                    if (planText.isEmpty()) {
+                        Toast.makeText(context, "Plan cannot be empty", Toast.LENGTH_SHORT).show();
+                    } else {
 
-                    Map<String, String> planMap = new HashMap<>();
-                    planMap.put("planText", planText);
+                        Map<String, Object> planMap = new HashMap<>();
+                        planMap.put("planText", planText);
+                        planMap.put("timeStamp", FieldValue.serverTimestamp());
 
-                    firestore.collection("plan").add(planMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentReference> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(context, "Plan saved", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Log.e(TAG, task.getException().getMessage());
+                        firestore.collection("plan").add(planMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(context, "Plan saved", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Log.e(TAG, task.getException().getMessage());
+                                    Toast.makeText(context, "Error in saving plan", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.e(TAG, e.getMessage());
                                 Toast.makeText(context, "Error in saving plan", Toast.LENGTH_SHORT).show();
                             }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e(TAG, e.getMessage());
-                            Toast.makeText(context, "Error in saving plan", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
+                        });
+                    }
                 }
 
                 dismiss();
@@ -132,7 +153,7 @@ public class AddNewPlan extends BottomSheetDialogFragment {
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         Activity activity = getActivity();
-        if(activity instanceof OnDialogCloseListener){
+        if (activity instanceof OnDialogCloseListener) {
             ((OnDialogCloseListener) activity).onDialogClose(dialog);
         }
     }

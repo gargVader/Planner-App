@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showData(){
         firestore.collection("plan")
+                .orderBy("timeStamp", Query.Direction.ASCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
