@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     if(documentChange.getType()==DocumentChange.Type.ADDED){
                         String id = documentChange.getDocument().getId();
                         Plan plan  = documentChange.getDocument().toObject(Plan.class).withId(id);
-
+                        Log.e(TAG, id);
                         planList.add(0, plan);
                         planAdapter.notifyDataSetChanged();
                     }

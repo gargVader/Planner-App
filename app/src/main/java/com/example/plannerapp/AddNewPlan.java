@@ -72,6 +72,8 @@ public class AddNewPlan extends BottomSheetDialogFragment {
             String planText = bundle.getString("planText");
             bottomSheetHeading.setText("View Plan");
             planEditText.setText(planText);
+            planEditText.setEnabled(false);
+            savePlanButton.setVisibility(View.INVISIBLE);
         }
 
         planEditText.addTextChangedListener(new TextWatcher() {
@@ -104,8 +106,9 @@ public class AddNewPlan extends BottomSheetDialogFragment {
 
 
                 if (finalUpdateMode) {
-//                    firestore.collection("plan").document()
+//                    firestore.collection("plan").document(id).update("planText", planText);
                     // TODO: UPDATE METHOD
+
 
                 } else {
                     if (planText.isEmpty()) {
