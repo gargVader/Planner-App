@@ -90,7 +90,7 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> {
                 view.findViewById(R.id.textCancel).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(activity, "Cancelled", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(activity, "Cancelled", Toast.LENGTH_SHORT).show();
                         alertDialog.dismiss();
                     }
                 });
